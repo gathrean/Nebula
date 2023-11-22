@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio Upload Form</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Audio Upload Form</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="audioFile" accept="audio/*" required>
+            <button type="submit">Upload</button>
+        </form>
+        <p id="status"></p>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
