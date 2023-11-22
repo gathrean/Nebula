@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Modernist'; /* Specify the name you want to use for the font */
+    src: url('fonts/Sk-Modernist-Regular.otf') format('opentype'); /* Set the path to the font file */
+    /* You can also include additional font formats for better browser support:
+    src: url('fonts/your-font-file.woff2') format('woff2'),
+         url('fonts/your-font-file.woff') format('woff'),
+         url('fonts/your-font-file.ttf') format('truetype');
+    */
+}
+
+body {
+    font-family: 'Modernist', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Modernist', Arial, sans-serif;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input[type="file"] {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
