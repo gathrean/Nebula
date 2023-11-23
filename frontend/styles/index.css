@@ -1,17 +1,13 @@
 @font-face {
-    font-family: 'Modernist'; /* Specify the name you want to use for the font */
-    src: url('fonts/Sk-Modernist-Regular.otf') format('opentype'); /* Set the path to the font file */
-    /* You can also include additional font formats for better browser support:
-    src: url('fonts/your-font-file.woff2') format('woff2'),
-         url('fonts/your-font-file.woff') format('woff'),
-         url('fonts/your-font-file.ttf') format('truetype');
-    */
+    font-family: 'Modernist';
+    src: url('fonts/Sk-Modernist-Regular.otf') format('opentype');
 }
 
 body {
     font-family: 'Modernist', Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #8860D0;
 }
 
 .container {
@@ -23,6 +19,12 @@ body {
 h1 {
     font-family: 'Modernist', Arial, sans-serif;
 }
+
+h1.nebula-logo {
+    font-size: 300px;
+    color: #1A0E2F;
+}
+
 
 form {
     display: flex;
