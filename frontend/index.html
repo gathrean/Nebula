@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NEBULA</title>
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+
+    <!-- Audio Upload Form -->
+    <div class="container">
+
+        <!-- Logo -->
+        <div class="logo-container">
+            <h1 class="nebula-logo">NEBULA</h1>
+        </div>
+
+        <!-- Drop Zone -->
+        <div id="dropZone" class="drop-zone">
+            <label for="audioFile" class="drop-label">Click or Drag & Drop Audio File Here</label>
+            <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+        </div>
+
+        <!-- Status Message -->
+        <p id="status"></p>
+    </div>
+
+    <div class="character">
+        <img src="/frontend/media/Nebula-003.png" alt="nebula" id="nebula-image">
+    </div>
+
+    <!-- Background Flare Video -->
+    <video autoplay muted loop id="background-video">
+        <!-- <source src="/frontend/media/flares.mp4" type="video/mp4"> -->
+    </video>
+
+    <script src="index.js"></script>
+</body>
+
+</html>

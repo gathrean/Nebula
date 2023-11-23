@@ -1,2 +1,4 @@
 venv/
 dataset/
+node_modules/
+.idea
