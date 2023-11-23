@@ -10,12 +10,13 @@ class MusicDataSet(Dataset):
 
     #Annotations file path (csv)
     #Audio dir path (dir)
-    def __init__(self, annotations_file, audio_dir, transformation, target_sample_rate):
+    def __init__(self, annotations_file, audio_dir, transformation, target_sample_rate, num_samples):
         #Setting the paths for the annotations and the audio files
         self.annotations = pd.read_csv(annotations_file)
         self.audio_dir = audio_dir
         self.transformation = transformation #transformation is the mel spectrogram
         self.target_sample_rate = target_sample_rate
+        self.num_samples = num_samples
 
     #get the length of the dataset
     def __len__(self):
@@ -25,6 +26,11 @@ class MusicDataSet(Dataset):
     def __getitem__(self, index):
         #getting the path to the audio sample
         audio_sample_path = self._get_audio_sample_path(index)
+        
+        # print(audio_sample_path)
+        # print(os.path.exists(audio_sample_path))
+        # print("Files in Directory:", os.listdir(self.audio_dir))
+        # print("ASCII Representation of File Name:", repr(os.path.basename(audio_sample_path)))
 
         #get the label of the audio sample
         label = self._get_audio_sample_label(index)
@@ -43,11 +49,35 @@ class MusicDataSet(Dataset):
         signal = self._resample_if_necessary(signal, sr)
         #take the signal and mix it down to mono
         signal = self._mix_down_if_necessary(signal)
-        
-        
+        #number of samples per signal is more than expected then truncate
+        signal = self._cut_if_necessary(signal)
+        #number of samples per signal is less than expected then apply right padding
+        signal = self._right_pad_if_necessary(signal)
         #passing the mel spectrogram and passing it the original signal 
         signal = self.transformation(signal)
+        
+        print(signal)
         return signal, label
+    
+    def _cut_if_necessary(self, signal):
+        # signal -> Tensor -> (1, num_samples) -> (1, 50000) -> (1, 22050)
+        length_signal = signal.shape[1]
+        if length_signal > self.num_samples:
+            #Take the whole first dimension and leave it untouched until number of samples
+            signal = signal[:, :self.num_samples]
+        return signal
+    
+    def _right_pad_if_necessary(self, signal):
+        length_signal = signal.shape[1]
+        if length_signal < self.num_samples:
+            # [1, 1, 1] -> [1, 1, 1, 0, 0]
+            #this is the number of missing samples we want to append
+            num_missing_samples = self.num_samples - length_signal
+            last_dim_padding = (0, num_missing_samples) #0 is number to left pad other param is number for right pad
+            # (0, 2) -> [1, 1, 1] -> [1, 1, 1, 0, 0] 
+            # (1, num_samples) 
+            signal = torch.nn.functional.pad(signal, last_dim_padding)
+        return signal
 
     #converting all audio sample rates to the target sample rate
     def _resample_if_necessary(self, signal, sr):
@@ -83,9 +113,9 @@ class MusicDataSet(Dataset):
 if __name__ == "__main__":
     ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Metadata_Test.csv"
     AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Test_submission\Test_submission"
-    
     #sample rate of the audio files
-    SAMPLE_RATE = 16000
+    SAMPLE_RATE = 22050
+    NUM_SAMPLES = 22050
     
     #mel spectrogram
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
@@ -98,6 +128,8 @@ if __name__ == "__main__":
     
     #it passes the path to the annotations file and the audio files
     usd = MusicDataSet(ANNOTATIONS_FILE, AUDIO_DIR, mel_spectrogram,
-                       SAMPLE_RATE)
+                       SAMPLE_RATE, 
+                       NUM_SAMPLES)
     print(f"There are {len(usd)} samples in the dataset.")
-    signal, label = usd[0]
+    signal, label = usd[5]
+    
