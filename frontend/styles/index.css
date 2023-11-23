@@ -7,7 +7,7 @@ body {
     font-family: 'Modernist', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #8860D0;
+    background-color: #161616;
 }
 
 .container {
@@ -16,15 +16,56 @@ body {
     text-align: center;
 }
 
+/* Header */
+
 h1 {
     font-family: 'Modernist', Arial, sans-serif;
 }
 
 h1.nebula-logo {
-    font-size: 300px;
-    color: #1A0E2F;
+    font-size: 100px;
+    color: #fc4537;
+    margin: 0;
+    padding: 0;
 }
 
+/* Background Flare Video */
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#background-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+}
+
+/* Logo */
+.logo-img {
+    width: 100px;
+    height: auto;
+}
+
+.logo-container {
+    max-width: 600px;
+    text-align: center;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-wrap: wrap;
+}
+
+/* FORM */
 
 form {
     display: flex;
@@ -38,7 +79,7 @@ input[type="file"] {
 
 button {
     padding: 10px 20px;
-    background-color: #3498db;
+    background-color: #fc4537;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -46,5 +87,6 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #b2342b;
+    color: #fff;
 }

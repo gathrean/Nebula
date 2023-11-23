@@ -1,21 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Audio Upload Form</title>
+    <title>NEBULA</title>
     <link rel="stylesheet" href="styles/index.css">
 </head>
+
 <body>
 
+    <!-- Audio Upload Form -->
     <div class="container">
-        <h1 class="nebula-logo">Nebula</h1>
+
+        <!-- Logo -->
+        <div class="logo-container">
+            <h1 class="nebula-logo">NEBULA</h1>
+        </div>
+
+        <!-- Upload Form -->
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" id="audioFile" accept="audio/*" required>
             <button type="submit">Upload</button>
         </form>
+
+        <!-- Status Message -->
         <p id="status"></p>
     </div>
 
+    <!-- Background Flare Video -->
+    <video autoplay muted loop id="background-video">
+        <source src="/frontend/media/flares.mp4" type="video/mp4">
+    </video>
+
     <script src="index.js"></script>
 </body>
+
 </html>
