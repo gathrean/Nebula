@@ -100,3 +100,28 @@ fileInput.addEventListener('change', handleFileInputChange);
 
 // Event listener for click on the drop zone to trigger file input
 dropZone.addEventListener('click', () => fileInput.click());
+
+// Function to handle the drop anywhere on the webpage
+document.addEventListener('dragenter', function(event) {
+    event.preventDefault();
+    highlight();
+});
+
+document.addEventListener('dragover', function(event) {
+    event.preventDefault();
+});
+
+document.addEventListener('dragleave', function(event) {
+    event.preventDefault();
+    unhighlight();
+});
+
+document.addEventListener('drop', function(event) {
+    event.preventDefault();
+    unhighlight();
+
+    const dt = event.dataTransfer;
+    const files = dt.files;
+
+    handleDroppedFiles(files);
+}, false);
