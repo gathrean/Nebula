@@ -17,11 +17,12 @@
             <h1 class="nebula-logo">NEBULA</h1>
         </div>
 
-        <!-- Upload Form -->
-        <form id="uploadForm" enctype="multipart/form-data">
-            <input type="file" id="audioFile" accept="audio/*" required>
-            <button type="submit">Upload</button>
-        </form>
+        <!-- Drop Zone -->
+        <div id="dropZone" class="drop-zone">
+            <label for="audioFile" class="drop-label">Click or Drag & Drop Audio File Here</label>
+            <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+        </div>        
+        
 
         <!-- Status Message -->
         <p id="status"></p>

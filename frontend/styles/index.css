@@ -8,6 +8,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #161616;
+    color: #fc4537;
 }
 
 .container {
@@ -89,4 +90,22 @@ button {
 button:hover {
     background-color: #b2342b;
     color: #fff;
+}
+
+/* Drop Zone styles */
+.drop-zone {
+    border: 2px dashed #fc4537;
+    padding: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: border 0.3s ease-in-out;
+}
+
+.drop-zone p {
+    margin: 0;
+}
+
+/* Highlight styles */
+.highlight {
+    border-color: #b2342b;
 }
