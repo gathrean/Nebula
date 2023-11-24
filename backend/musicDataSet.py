@@ -10,11 +10,12 @@ class MusicDataSet(Dataset):
 
     #Annotations file path (csv)
     #Audio dir path (dir)
-    def __init__(self, annotations_file, audio_dir, transformation, target_sample_rate, num_samples):
+    def __init__(self, annotations_file, audio_dir, transformation, target_sample_rate, num_samples, device):
         #Setting the paths for the annotations and the audio files
         self.annotations = pd.read_csv(annotations_file)
         self.audio_dir = audio_dir
-        self.transformation = transformation #transformation is the mel spectrogram
+        self.device = device
+        self.transformation = transformation.to(self.device) #transformation is the mel spectrogram
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
 
@@ -40,8 +41,10 @@ class MusicDataSet(Dataset):
         except Exception as e:
             print(f"Error loading audio file {audio_sample_path}: {e}")
             return None, None
-
         
+        # the signal is registered to the device
+        signal = signal.to(self.device)
+
         # the signal is a tensor that contains the audio samples
         # signal -> (num_channels, num_samples) -> (2, 16000) -> (1, 16000)
         
@@ -84,6 +87,8 @@ class MusicDataSet(Dataset):
         #resample if necessary
         if sr != self.target_sample_rate:
             resampler = torchaudio.transforms.Resample(sr, self.target_sample_rate)
+            # Move resampler to the same device as the signal
+            resampler = resampler.to(signal.device)
             signal = resampler(signal)
         return signal
 
@@ -117,6 +122,13 @@ if __name__ == "__main__":
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
     
+    #choosing device, if cuda is available then use cuda else use cpu
+    if torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"
+    print(f"Using device {device}")
+    
     #mel spectrogram
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
         sample_rate=SAMPLE_RATE,
@@ -129,7 +141,8 @@ if __name__ == "__main__":
     #it passes the path to the annotations file and the audio files
     usd = MusicDataSet(ANNOTATIONS_FILE, AUDIO_DIR, mel_spectrogram,
                        SAMPLE_RATE, 
-                       NUM_SAMPLES)
+                       NUM_SAMPLES,
+                       device)
     print(f"There are {len(usd)} samples in the dataset.")
     signal, label = usd[5]
     
