@@ -18,6 +18,8 @@ class MusicDataSet(Dataset):
         self.transformation = transformation.to(self.device) #transformation is the mel spectrogram
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
+        #creating a dictionary that maps the labels to the index
+        self.label_to_index = {label: idx for idx, label in enumerate(set(self.annotations.iloc[:, 1]))}
 
     #get the length of the dataset
     def __len__(self):
@@ -59,7 +61,10 @@ class MusicDataSet(Dataset):
         #passing the mel spectrogram and passing it the original signal 
         signal = self.transformation(signal)
         
-        print(signal)
+        #convert label to numerical index
+        label = self.label_to_index[label]
+        label = torch.tensor(label)
+        
         return signal, label
     
     def _cut_if_necessary(self, signal):

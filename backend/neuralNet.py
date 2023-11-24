@@ -85,7 +85,7 @@ class CNNNetwork(nn.Module):
 if __name__ == "__main__":
     cnn = CNNNetwork()
     
-    # Check if CUDA is available and CPU is not being heavily used
+    # Check if CUDA is available
     if torch.cuda.is_available():  # You need to define the not_cpu_heavy_use function
         cnn = cnn.cuda()
         input_size = (1, 64, 44)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         summary(cnn, input_size)
         print("CUDA is available")
     else:
-        # If CUDA is not available or CPU is under heavy use, use CPU
+        # If CUDA is not available
         input_size = (1, 64, 44)
         # print the summary of the model, takes model and input size
         summary(cnn, input_size)
