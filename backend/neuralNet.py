@@ -1,62 +1,100 @@
-import torch
 from torch import nn
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision.transforms import ToTensor
+from torchsummary import summary
+import torch
 
-# Download training data from open datasets.
-training_data = datasets.FashionMNIST(
-    root="data",
-    train=True,
-    download=True,
-    transform=ToTensor(),
-)
-
-# Download test data from open datasets.
-test_data = datasets.FashionMNIST(
-    root="data",
-    train=False,
-    download=True,
-    transform=ToTensor(),
-)
-
-batch_size = 64
-
-# Create data loaders.
-train_dataloader = DataLoader(training_data, batch_size=batch_size)
-test_dataloader = DataLoader(test_data, batch_size=batch_size)
-
-for X, y in test_dataloader:
-    print(f"Shape of X [N, C, H, W]: {X.shape}")
-    print(f"Shape of y: {y.shape} {y.dtype}")
-    break
-
-device = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps"
-    if torch.backends.mps.is_available()
-    else "cpu"
-)
-print(f"Using {device} device")
-
-# Define model
-class NeuralNetwork(nn.Module):
+class CNNNetwork(nn.Module):
+    
+    #constructor for the class
     def __init__(self):
         super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28*28, 512),
+        #4 conv blocks / flatten / linear / softmax
+        
+        # container that has layers, an pytorch will process the layers in order
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels=1,
+                      out_channels=16,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
             nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 10)
+            
+            nn.MaxPool2d(kernel_size=2)
         )
-
-    def forward(self, x):
+        
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(in_channels=16,
+                      out_channels=32,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+                
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(in_channels=32,
+                      out_channels=64,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+        
+        self.conv4 = nn.Sequential(
+            nn.Conv2d(in_channels=64,
+                      out_channels=128,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+        
+        #flatten the data
+        self.flatten = nn.Flatten()
+        # out_features is the number of classes (drum, piano, guitar, violin)
+        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 4)
+        #softmax to normalize the output between the categories
+        self.softmax = nn.Softmax(dim=1)
+    
+    
+    def forward(self, input_data):
+        # pass the results from one layer to the next
+        x = self.conv1(input_data)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
         x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
-
-model = NeuralNetwork().to(device)
-print(model)
+        logits = self.linear(x)
+        predictions = self.softmax(logits)
+        
+        return predictions
+        
+if __name__ == "__main__":
+    cnn = CNNNetwork()
+    
+    # Check if CUDA is available and CPU is not being heavily used
+    if torch.cuda.is_available():  # You need to define the not_cpu_heavy_use function
+        cnn = cnn.cuda()
+        input_size = (1, 64, 44)
+        # print the summary of the model, takes model and input size
+        summary(cnn, input_size)
+        print("CUDA is available")
+    else:
+        # If CUDA is not available or CPU is under heavy use, use CPU
+        input_size = (1, 64, 44)
+        # print the summary of the model, takes model and input size
+        summary(cnn, input_size)
+        print("CUDA not available")

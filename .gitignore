@@ -2,3 +2,4 @@ venv/
 dataset/
 node_modules/
 .idea
+requirements.txt
