@@ -15,8 +15,8 @@ from neuralNet import CNNNetwork
 
 
 BATCH_SIZE = 128
-EPOCHS = 10
-LEARNING_RATE = 0.001
+EPOCHS = 100
+LEARNING_RATE = 0.000001
 
 ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Metadata_Test.csv"
 AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Test_submission\Test_submission"

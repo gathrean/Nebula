@@ -1,11 +1,8 @@
 import torch
+import os
 import torchaudio
 from neuralNet import CNNNetwork
-from musicDataSet import MusicDataSet
-from train import AUDIO_DIR, ANNOTATIONS_FILE, SAMPLE_RATE, NUM_SAMPLES
-
-
-
+from train import SAMPLE_RATE, NUM_SAMPLES
 
 class_mapping = [
     "Sound_Guitar",
@@ -14,47 +11,81 @@ class_mapping = [
     "Sound_Piano"
 ]
 
+def resample_if_necessary(signal, sr, target_sample_rate):
+    # Resample if necessary
+    if sr != target_sample_rate:
+        resampler = torchaudio.transforms.Resample(sr, target_sample_rate)
+        signal = resampler(signal)
+    return signal
 
-def predict(model, input, target, class_mapping):
+def mix_down_if_necessary(signal):
+    # Mix down if necessary (only if there is more than one channel)
+    if signal.shape[0] > 1:
+        signal = torch.mean(signal, dim=0, keepdim=True)
+    return signal
+
+def cut_if_necessary(signal, num_samples):
+    length_signal = signal.shape[1]
+    if length_signal > num_samples:
+        signal = signal[:, :num_samples]
+    return signal
+
+def right_pad_if_necessary(signal, num_samples):
+    length_signal = signal.shape[1]
+    if length_signal < num_samples:
+        num_missing_samples = num_samples - length_signal
+        last_dim_padding = (0, num_missing_samples)
+        signal = torch.nn.functional.pad(signal, last_dim_padding)
+    return signal
+
+def predict_single_file(model, audio_file_path, class_mapping):
     model.eval()
-    with torch.no_grad():
-        predictions = model(input)
-        # Tensor (1, 10) -> [ [0.1, 0.01, ..., 0.6] ]
-        predicted_index = predictions[0].argmax(0)
-        predicted = class_mapping[predicted_index]
-        expected = class_mapping[target]
-    return predicted, expected
-
-
-if __name__ == "__main__":
-    # load back the model
-    cnn = CNNNetwork()
-    state_dict = torch.load("Nebula.pth")
-    cnn.load_state_dict(state_dict)
-
-    # load music sound dataset validation dataset
-    # instantiating our dataset object and create data loader
-    #mel spectrogram
+    
+    # Load the audio file
+    try:
+        signal, sr = torchaudio.load(audio_file_path)
+    except Exception as e:
+        print(f"Error loading audio file {audio_file_path}: {e}")
+        return
+    
+    # Apply the transformations
+    target_sample_rate = SAMPLE_RATE  # Modify this if needed
+    signal = signal.to("cpu")
+    signal = resample_if_necessary(signal, sr, target_sample_rate)
+    signal = mix_down_if_necessary(signal)
+    signal = cut_if_necessary(signal, NUM_SAMPLES)
+    signal = right_pad_if_necessary(signal, NUM_SAMPLES)
+    
+    # Apply mel spectrogram transformation
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
-        sample_rate=SAMPLE_RATE,
+        sample_rate=target_sample_rate,
         n_fft=1024,
         hop_length=512,
         n_mels=64
     )
+    signal = mel_spectrogram(signal)
     
-    #it passes the path to the annotations file and the audio files
-    usd = MusicDataSet(ANNOTATIONS_FILE, 
-                       AUDIO_DIR, 
-                       mel_spectrogram,
-                       SAMPLE_RATE, 
-                       NUM_SAMPLES,
-                       "cpu")
+    # Prepare the input tensor
+    input = signal.unsqueeze(0)  # [1, num_channels, freq, time]
+    
+    # Make an inference and print the prediction
+    with torch.no_grad():
+        predictions = model(input)
+        predicted_index = predictions[0].argmax(0)
+        predicted = class_mapping[predicted_index]
+        
+    file_name = os.path.basename(audio_file_path)  # Extract the file name
+    print(f"Predicted for file '{file_name}': '{predicted}'")
+    return predicted
 
-    # get a sample from the music dataset for inference
-    input, target = usd[0][0], usd[0][1] # [batch_size, num_channels, freq, time]
-    input.unsqueeze_(0) # [1, num_channels, freq, time]
+if __name__ == "__main__":
+    # Load the model
+    cnn = CNNNetwork()
+    state_dict = torch.load("Nebula.pth")
+    cnn.load_state_dict(state_dict)
 
-    # make an inference
-    predicted, expected = predict(cnn, input, target,
-                                  class_mapping)
-    print(f"Predicted: '{predicted}', expected: '{expected}'")
+    # Path to the audio file you want to predict
+    audio_file_path = "C:/Users/bardi/OneDrive/Documents/CST_Sem3/Nebula/Nebula/dataset/archive/Test_submission/Test_submission/darbuka-drum-percussion-64018.wav"
+
+    # Make a prediction for the single audio file
+    predicted = predict_single_file(cnn, audio_file_path, class_mapping)
