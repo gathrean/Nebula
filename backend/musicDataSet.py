@@ -11,38 +11,21 @@ class MusicDataSet(Dataset):
     #Annotations file path (csv)
     #Audio dir path (dir)
     def __init__(self, annotations_file, audio_dir, transformation, target_sample_rate, num_samples, device):
-        #Setting the paths for the annotations and the audio files
         self.annotations = pd.read_csv(annotations_file)
         self.audio_dir = audio_dir
         self.device = device
-        self.transformation = transformation.to(self.device) #transformation is the mel spectrogram
+        self.transformation = transformation.to(self.device)
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
-        #creating a dictionary that maps the labels to the index
-        self.label_to_index = {label: idx for idx, label in enumerate(set(self.annotations.iloc[:, 1]))}
 
-    #get the length of the dataset
     def __len__(self):
         return len(self.annotations)
 
 
     def __getitem__(self, index):
-        #getting the path to the audio sample
         audio_sample_path = self._get_audio_sample_path(index)
-        
-        # print(audio_sample_path)
-        # print(os.path.exists(audio_sample_path))
-        # print("Files in Directory:", os.listdir(self.audio_dir))
-        # print("ASCII Representation of File Name:", repr(os.path.basename(audio_sample_path)))
-
-        #get the label of the audio sample
         label = self._get_audio_sample_label(index)
-        #returns the signal and the sample rate
-        try:
-            signal, sr = torchaudio.load(audio_sample_path)
-        except Exception as e:
-            print(f"Error loading audio file {audio_sample_path}: {e}")
-            return None, None
+        signal, sr = torchaudio.load(audio_sample_path)
         
         # the signal is registered to the device
         signal = signal.to(self.device)
@@ -62,8 +45,7 @@ class MusicDataSet(Dataset):
         signal = self.transformation(signal)
         
         #convert label to numerical index
-        label = self.label_to_index[label]
-        label = torch.tensor(label)
+        label = torch.tensor(label).float()
         
         return signal, label
     
@@ -107,22 +89,21 @@ class MusicDataSet(Dataset):
 
     #get the path to the audio file
     def _get_audio_sample_path(self, index):
-        # Use forward slashes consistently for file paths
-        file_name = self.annotations.iloc[index, 0].replace("\\", "/")
-        path = os.path.join(self.audio_dir, file_name).replace("\\", "/")
-        return path
+        return os.path.join(self.audio_dir, self.annotations.iloc[index, 0])
 
 
 
     
     #get the instrument name (the correct answer) from the annotations file
     def _get_audio_sample_label(self, index):
-        return self.annotations.iloc[index, 1]
+        # Assuming labels start from the 2nd column
+        return self.annotations.iloc[index, 1:].tolist()
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Metadata_Test.csv"
-    AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Test_submission\Test_submission"
+    ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTest.csv"
+    AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiSongs"
+    
     #sample rate of the audio files
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
@@ -148,6 +129,16 @@ if __name__ == "__main__":
                        SAMPLE_RATE, 
                        NUM_SAMPLES,
                        device)
-    print(f"There are {len(usd)} samples in the dataset.")
-    signal, label = usd[5]
+    
+    # After creating an instance of MusicDataSet, say 'usd', check its length
+    print("Length of the dataset:", len(usd))
+
+    # Access a valid index
+    # Make sure 'index' is less than the length of the dataset
+    index = 2  # for example
+    if index < len(usd):
+        signal, label = usd[index]
+    else:
+        print(f"Index {index} is out of bounds for the dataset.")
+
     

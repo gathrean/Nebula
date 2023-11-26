@@ -1,8 +1,7 @@
 import torch
 import torchaudio
-from torch import nn
 from torch.utils.data import DataLoader
-
+import torch.nn as nn
 from musicDataSet import MusicDataSet
 from neuralNet import CNNNetwork
 
@@ -13,13 +12,13 @@ from neuralNet import CNNNetwork
 # 4- train
 # 5- save trained model
 
-
+loss_fn = nn.BCEWithLogitsLoss()
 BATCH_SIZE = 128
 EPOCHS = 100
 LEARNING_RATE = 0.000001
 
-ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Metadata_Test.csv"
-AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Test_submission\Test_submission"
+ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTest.csv"
+AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiSongs"
 #sample rate of the audio files
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
@@ -34,11 +33,13 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     for input, target in data_loader:
         input, target = input.to(device), target.to(device)
 
-        # calculate loss
+        # Forward pass
         prediction = model(input)
+
+        # Calculate loss
         loss = loss_fn(prediction, target)
 
-        # backpropagate error and update weights
+        # Backward pass and optimize
         optimiser.zero_grad()
         loss.backward()
         optimiser.step()
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     print(cnn)
 
     # initialise loss funtion + optimiser
-    loss_fn = nn.CrossEntropyLoss()
+
     optimiser = torch.optim.Adam(cnn.parameters(),
                                  lr=LEARNING_RATE)
 
