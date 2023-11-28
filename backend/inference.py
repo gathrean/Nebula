@@ -31,7 +31,7 @@ def right_pad_if_necessary(signal, num_samples):
         signal = torch.nn.functional.pad(signal, last_dim_padding)
     return signal
 
-def predict_single_file(model, audio_file_path, class_mapping, threshold=0.51):
+def predict_single_file(model, audio_file_path, class_mapping, threshold=0.2):
     model.eval()
     
     # Load the audio file
@@ -64,16 +64,28 @@ def predict_single_file(model, audio_file_path, class_mapping, threshold=0.51):
     # Make an inference
     with torch.no_grad():
         predictions = model(input)
-        probabilities = torch.sigmoid(predictions)
-        print("Raw probabilities:", probabilities)  # Print raw probabilities
-        predicted_labels = (probabilities > threshold).int().squeeze(0)
+        probabilities = torch.sigmoid(predictions).squeeze(0)
+
+        # Define predicted_labels based on a threshold
+        predicted_labels = (probabilities > threshold).int()
+
+        # Create a list of (probability, label) pairs
+        prob_label_pairs = [(prob.item(), label) for prob, label in zip(probabilities, class_mapping)]
+
+        # Sort the pairs based on probability in descending order
+        sorted_prob_label_pairs = sorted(prob_label_pairs, reverse=True, key=lambda x: x[0])
+
+        # Print the sorted probabilities and labels
+        print("Sorted probabilities and labels:")
+        for prob, label in sorted_prob_label_pairs:
+            print(f"{label}: {prob:.4f}")
+
+        # If you still need to use predicted_labels
+        print(f"Predictions for file '{os.path.basename(audio_file_path)}':")
+        for i, label in enumerate(predicted_labels):
+            if label.item() == 1:
+                print(f"  - {class_mapping[i]}")
         
-    # Print the predictions
-    file_name = os.path.basename(audio_file_path)  # Extract the file name
-    print(f"Predictions for file '{file_name}':")
-    for i, label in enumerate(predicted_labels):
-        if label.item() == 1:
-            print(f"  - {class_mapping[i]}")
     return predicted_labels
 
 if __name__ == "__main__":
@@ -86,7 +98,6 @@ if __name__ == "__main__":
         "flute",
         "acoustic guitar",
         "electric guitar",
-        "organ",
         "piano",
         "saxophone",
         "trumpet",
@@ -101,7 +112,7 @@ if __name__ == "__main__":
     cnn.eval()
 
     # Path to the audio file you want to predict
-    audio_file_path = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\archive\Test_submission\Test_submission\ROOM-room8-MUS-beethoven1.wav"
+    audio_file_path = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\Drake.wav"
 
     # Make a prediction for the single audio file
     predicted_labels = predict_single_file(cnn, audio_file_path, class_mapping)

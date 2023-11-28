@@ -65,7 +65,7 @@ class CNNNetwork(nn.Module):
         #flatten the data
         self.flatten = nn.Flatten()
         # out_features is the number of classes (drum, piano, guitar, violin)
-        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 11)
+        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 10)
         #softmax to normalize the output between the categories
         self.sigmoid = nn.Sigmoid()
     

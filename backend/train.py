@@ -13,11 +13,11 @@ from neuralNet import CNNNetwork
 # 5- save trained model
 
 loss_fn = nn.BCEWithLogitsLoss()
-BATCH_SIZE = 128
-EPOCHS = 100
-LEARNING_RATE = 0.000001
+BATCH_SIZE = 256
+EPOCHS = 40 
+LEARNING_RATE = 0.001
 
-ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTest.csv"
+ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTraining.csv"
 AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiSongs"
 #sample rate of the audio files
 SAMPLE_RATE = 22050
