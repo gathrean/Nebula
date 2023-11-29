@@ -3,3 +3,6 @@ dataset/
 node_modules/
 .idea
 requirements.txt
+__pycache__/
+filePaths.py
+node_modules/

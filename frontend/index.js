@@ -5,11 +5,12 @@ const status = document.getElementById('status');
 
 // Function to upload file data using fetch
 function handleFileUpload(formData) {
-    return fetch('/upload', {
-        method: 'POST',
-        body: formData
+    return fetch('http://localhost:3000/upload', {
+      method: 'POST',
+      body: formData
     });
-}
+  }
+  
 
 // Function to display upload status based on response
 function displayUploadStatus(response) {

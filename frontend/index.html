@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>NEBULA</title>
-    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" type="text/css" href="styles/index.css">
 </head>
 
 <body>
@@ -23,12 +23,16 @@
             <input type="file" id="audioFile" accept="audio/*" style="display: none;">
         </div>
 
+        <div id="predictionResult">
+            
+        </div>
+
         <!-- Status Message -->
         <p id="status"></p>
     </div>
 
     <div class="character">
-        <img src="/frontend/media/Nebula-003.png" alt="nebula" id="nebula-image">
+        <img src="media/Nebula-003.png" alt="nebula" id="nebula-image">
     </div>
 
     <!-- Background Flare Video -->
@@ -36,6 +40,7 @@
         <!-- <source src="/frontend/media/flares.mp4" type="video/mp4"> -->
     </video>
 
+    <script src="upload.js"></script>
     <script src="index.js"></script>
 </body>
 

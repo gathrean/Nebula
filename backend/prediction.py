@@ -3,7 +3,14 @@ import torch
 import os
 import torchaudio
 from neuralNet import CNNNetwork
+from train import SAMPLE_RATE, NUM_SAMPLES
 
+class_mapping = [
+    "Sound_Guitar",
+    "Sound_Drum",
+    "Sound_Violin",
+    "Sound_Piano"
+]
 
 def resample_if_necessary(signal, sr, target_sample_rate):
     # Resample if necessary
@@ -32,7 +39,7 @@ def right_pad_if_necessary(signal, num_samples):
         signal = torch.nn.functional.pad(signal, last_dim_padding)
     return signal
 
-def predict_single_file(model, audio_file_path, class_mapping, threshold=0.2):
+def predict_single_file(model, audio_file_path, class_mapping):
     model.eval()
     
     # Load the audio file
@@ -62,58 +69,25 @@ def predict_single_file(model, audio_file_path, class_mapping, threshold=0.2):
     # Prepare the input tensor
     input = signal.unsqueeze(0)  # [1, num_channels, freq, time]
     
-    # Make an inference
+    # Make an inference and print the prediction
     with torch.no_grad():
         predictions = model(input)
-        probabilities = torch.sigmoid(predictions).squeeze(0)
-
-        # Define predicted_labels based on a threshold
-        predicted_labels = (probabilities > threshold).int()
-
-        # Create a list of (probability, label) pairs
-        prob_label_pairs = [(prob.item(), label) for prob, label in zip(probabilities, class_mapping)]
-
-        # Sort the pairs based on probability in descending order
-        sorted_prob_label_pairs = sorted(prob_label_pairs, reverse=True, key=lambda x: x[0])
-
-        # Print the sorted probabilities and labels
-        print("Sorted probabilities and labels:")
-        for prob, label in sorted_prob_label_pairs:
-            print(f"{label}: {prob:.4f}")
-
-        # If you still need to use predicted_labels
-        print(f"Predictions for file '{os.path.basename(audio_file_path)}':")
-        for i, label in enumerate(predicted_labels):
-            if label.item() == 1:
-                print(f"  - {class_mapping[i]}")
+        predicted_index = predictions[0].argmax(0)
+        predicted = class_mapping[predicted_index]
         
-    return predicted_labels
+    file_name = os.path.basename(audio_file_path)  # Extract the file name
+    print(f"Predicted for file '{file_name}': '{predicted}'")
+    return predicted
 
 if __name__ == "__main__":
-    # Define constants
-    SAMPLE_RATE = 22050
-    NUM_SAMPLES = 22050
-    class_mapping = [
-        "cello",
-        "clarinet",
-        "flute",
-        "acoustic guitar",
-        "electric guitar",
-        "piano",
-        "saxophone",
-        "trumpet",
-        "violin",
-        "human singing voice"
-    ]
-
     # Load the model
     cnn = CNNNetwork()
-    state_dict = torch.load("Nebula.pth", map_location=torch.device('cpu'))
+    state_dict = torch.load("/Users/ravdeepaulakh/Downloads/Nebula/Nebula.pth")
     cnn.load_state_dict(state_dict)
-    cnn.eval()
 
     # Path to the audio file you want to predict
     audio_file_path = sys.argv[1]
 
     # Make a prediction for the single audio file
-    predicted_labels = predict_single_file(cnn, audio_file_path, class_mapping)
+    predicted = predict_single_file(cnn, audio_file_path, class_mapping)
+    print(predicted)
