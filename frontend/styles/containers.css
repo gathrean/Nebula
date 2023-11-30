@@ -1,0 +1,23 @@
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+.site-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.character-container {
+    flex: 1;
+    text-align: center;
+}
+
+.upload-form-container {
+    flex: 1;
+    padding: 0 20px;
+}

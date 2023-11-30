@@ -1,0 +1,15 @@
+.drop-zone {
+    border: 2px dashed #983d50;
+    padding: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: border 0.3s ease-in-out;
+}
+
+.drop-zone p {
+    margin: 0;
+}
+
+.highlight {
+    border-color: #b2342b;
+}

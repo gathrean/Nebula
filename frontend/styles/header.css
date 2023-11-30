@@ -1,0 +1,24 @@
+h1 {
+    font-family: 'Modernist', Arial, sans-serif;
+}
+
+h1.nebula-logo {
+    font-size: 100px;
+    color: #983d50;
+    margin: 0;
+    padding: 0;
+}
+
+.logo-img {
+    width: 100px;
+    height: auto;
+}
+
+.logo-container {
+    max-width: 600px;
+    text-align: center;
+    display: flex;
+    align-items: left;
+    justify-content: center;
+    flex-wrap: wrap;
+}
