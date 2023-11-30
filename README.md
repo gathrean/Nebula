@@ -20,10 +20,6 @@ COMP 3940 Project
     - MacOS example: `/Users/ean/<where you cloned the repo>/Nebula/backend/inference.py`.
       - You can find this by right-clicking the file in your IDE and selecting "Copy Path".
 
-5. Install these in your Command Line / Terminal:
-    - `npm i node`
-    - `npm i nodemon`
+5. Start the program with `npm start`.
 
-6. Start the program with `npm start`.
-
-7. Open `localhost:3000` in your browser.
+6. Open `localhost:3000` in your browser.
