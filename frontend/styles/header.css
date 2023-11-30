@@ -1,5 +1,13 @@
 h1 {
     font-family: 'Modernist', Arial, sans-serif;
+    margin: 0;
+    font-weight: 500;
+}
+
+p {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    font-weight: 0;
 }
 
 h1.nebula-logo {
@@ -12,13 +20,4 @@ h1.nebula-logo {
 .logo-img {
     width: 100px;
     height: auto;
-}
-
-.logo-container {
-    max-width: 600px;
-    text-align: center;
-    display: flex;
-    align-items: left;
-    justify-content: center;
-    flex-wrap: wrap;
 }
