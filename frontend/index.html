@@ -4,44 +4,53 @@
 <head>
     <meta charset="UTF-8">
     <title>NEBULA</title>
-    <link rel="stylesheet" type="text/css" href="styles/index.css">
+
+    <!-- LAYOUTS -->
+    <link rel="stylesheet" type="text/css" href="styles/global.css">
+    <link rel="stylesheet" type="text/css" href="styles/header.css">
+    <link rel="stylesheet" type="text/css" href="styles/containers.css">
+
+    <!-- SPECIFIC OBJECTS -->
+    <link rel="stylesheet" type="text/css" href="styles/character.css">
+    <link rel="stylesheet" type="text/css" href="styles/drop-zone.css">
+    <link rel="stylesheet" type="text/css" href="styles/upload-form.css">
 </head>
 
 <body>
 
-    <!-- Audio Upload Form -->
     <div class="container">
-
         <!-- Logo -->
         <div class="logo-container">
             <h1 class="nebula-logo">NEBULA</h1>
         </div>
 
-        <!-- Drop Zone -->
-        <div id="dropZone" class="drop-zone">
-            <label for="audioFile" class="drop-label">Click or Drag & Drop Audio File Here</label>
-            <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+        <div class="site-container">
+
+            <!-- Character -->
+            <div class="character-container">
+                <img src="media/Nebula-003.png" alt="nebula" id="nebula-image">
+            </div>
+
+            <!-- Audio Upload Form -->
+            <div class="upload-form-container">
+
+                <!-- Drop Zone -->
+                <div id="dropZone" class="drop-zone">
+                    <label for="audioFile" class="drop-label">Click or Drag & Drop Audio File Here</label>
+                    <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+                </div>
+
+                <!-- Container for displaying predicted labels -->
+                <div id="predictedLabels"></div>
+
+                <!-- Status Message -->
+                <p id="status"></p>
+            </div>
         </div>
 
-        <!-- Container for displaying predicted labels -->
-        <div id="predictedLabels"></div>
-            
-        </div>
 
-        <!-- Status Message -->
-        <p id="status"></p>
     </div>
-
-    <div class="character">
-        <img src="media/Nebula-003.png" alt="nebula" id="nebula-image">
-    </div>
-
-    <!-- Background Flare Video -->
-    <video autoplay muted loop id="background-video">
-        <!-- <source src="/frontend/media/flares.mp4" type="video/mp4"> -->
-    </video>
-
-
+    <!-- SCRIPTS -->
     <script src="index.js"></script>
 </body>
 
