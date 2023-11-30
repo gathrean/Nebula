@@ -7,3 +7,5 @@ __pycache__/
 filePaths.py
 node_modules/
 uploads/
+package-lock.json
+package.json
