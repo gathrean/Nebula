@@ -10,14 +10,14 @@ p {
     font-weight: 0;
 }
 
-h1.nebula-logo {
+h1.nebula-logo-text {
     font-size: 100px;
     color: #983d50;
     margin: 0;
     padding: 0;
 }
 
-.logo-img {
+.nebula-logo {
     width: 100px;
     height: auto;
 }
