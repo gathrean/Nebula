@@ -21,3 +21,19 @@ h1.nebula-logo-text {
     width: 100px;
     height: auto;
 }
+
+.nebula-logo-container {
+    overflow: hidden; /* Hide overflow content for animation */
+    white-space: nowrap; /* Prevent line breaks */
+    position: relative; /* Position for animation */
+    animation: slideIn 1s ease forwards; /* Apply the animation */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%); /* Start position, off-screen right */
+    }
+    to {
+        transform: translateX(0); /* End position, original spot */
+    }
+}
