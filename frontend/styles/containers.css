@@ -6,7 +6,7 @@
     align-items: center;
 
     max-width: 90vw;
-    height: max-content;
+    height: 100vh;
 }
 
 .logo-container {
@@ -42,7 +42,7 @@
 
 .upload-form-container {
     display: flex;
-    flex: 1;
+    flex: 1 1 0%;
     align-items: flex-start;
     justify-content: center;
     text-align: center;
