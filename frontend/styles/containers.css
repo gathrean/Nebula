@@ -20,6 +20,14 @@
     text-align: center;
 }
 
+.overlay-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    text-align: center;
+}
+
 /* 
     site-container containts both
     character-container and upload-form-container
