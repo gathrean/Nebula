@@ -35,7 +35,7 @@
 .site-container {
     display: flex;
     justify-content: space-around;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 
     max-width: 100vw;
     margin: 0 auto;
@@ -52,8 +52,35 @@
     display: flex;
     flex-direction: column;
     flex: 1 1 0%;
-    align-items: flex-start;
     justify-content: center;
     text-align: center;
-    /* padding: 0 20px; */
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+    .logo-container {
+        margin-bottom: 20px;
+    }
+
+    .site-container {
+        width: 90vw;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Change to a column layout */
+    }
+
+    .character-container,
+    .upload-form-container {
+        width: 100%;
+        /* Occupy full width */
+    }
+
+    .character-container {
+        width: 60vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }
