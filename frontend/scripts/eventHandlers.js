@@ -64,5 +64,12 @@ function hideOverlay() {
 fileInput.addEventListener('change', () => {
     if (fileInput.files.length > 0) {
         handleFileUpload(fileInput.files[0]);
+    } else {
+        // Show 'None' image if no file selected
+        const nebulaNone = document.querySelector('.character-container:nth-child(1)');
+        const nebulaDone = document.querySelector('.character-container:nth-child(3)');
+        
+        nebulaNone.style.display = 'block';
+        nebulaDone.style.display = 'none';
     }
 });
