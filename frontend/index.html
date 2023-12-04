@@ -51,9 +51,26 @@
         <div class="site-container">
 
             <!-- Character -->
+
+            <!-- 01 - None (Default) -->
             <div class="character-container">
-                <img src="media/Nebula-003.png" alt="nebula" id="nebula-image">
+                <img src="media/NBL-01-None.png" alt="nebula" id="nebula-image">
             </div>
+
+            <!-- 02 - Loading -->
+            <div class="character-container" style="display: none;">
+                <video id="nebula-image" loop autoplay muted>
+                    <source src="media/NBL-02-Loading-Loop.mp4" type="video/mp4" alt="nebula">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            
+
+            <!-- 03 - Done -->
+            <div class="character-container" style="display: none;">
+                <img src="media/NBL-03-Done.png"  alt="nebula" id="nebula-image">
+            </div>
+
 
             <!-- Audio Upload Form -->
             <div class="upload-form-container">
@@ -79,7 +96,6 @@
                 <p id="status"></p>
             </div>
         </div>
-
 
     </div>
 
