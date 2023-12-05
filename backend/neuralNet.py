@@ -3,9 +3,6 @@ from torchsummary import summary
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 import torch
-import torchvision.transforms as transforms
-import torch.nn.functional as F
-
 
 class CNNNetwork(nn.Module):
     

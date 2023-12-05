@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     # Load the model
     cnn = CNNNetwork()
-    state_dict = torch.load("NebulaWeight.pth", map_location=torch.device('cpu'))
+    state_dict = torch.load("Nebula.pth", map_location=torch.device('cpu'))
     cnn.load_state_dict(state_dict)
     cnn.eval()
 
