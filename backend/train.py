@@ -1,37 +1,47 @@
 import torch
 import torchaudio
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 import torch.nn as nn
 from musicDataSet import MusicDataSet
 from neuralNet import CNNNetwork
 
-
-# 1- download dataset
-# 2- create data loader
-# 3- build model
-# 4- train
-# 5- save trained model
-
-loss_fn = nn.BCEWithLogitsLoss()
+# Constants
 BATCH_SIZE = 256
-EPOCHS = 40 
+EPOCHS = 200
 LEARNING_RATE = 0.001
-
-ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTraining.csv"
-AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiSongs"
-#sample rate of the audio files
+VALIDATION_SPLIT = 0.1
+ANNOTATIONS_FILE = r"C:\Users\I5Gamer\Documents\Nebula\data\MultiTraining.csv"
+AUDIO_DIR = r"C:\Users\I5Gamer\Documents\Nebula\data\MultiSong"
 SAMPLE_RATE = 22050
-NUM_SAMPLES = 22050
+NUM_SAMPLES = 22050 * 2
 
+def create_data_loaders(dataset, batch_size, validation_split):
+    total_samples = len(dataset)
+    validation_size = int(validation_split * total_samples)
+    training_size = total_samples - validation_size
 
-def create_data_loader(train_data, batch_size):
-    train_dataloader = DataLoader(train_data, batch_size=batch_size)
-    return train_dataloader
+    train_set, val_set = random_split(dataset, [training_size, validation_size])
 
+    train_dataloader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    val_dataloader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
 
-def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
+    return train_dataloader, val_dataloader
+
+def calculate_class_weights(dataset):
+    # Assuming your dataset has a method to get the total count of each class
+    class_counts = dataset.get_class_counts()
+    total_samples = sum(class_counts.values())
+    class_weights = [total_samples / (len(class_counts) * count) for count in class_counts.values()]
+    return torch.tensor(class_weights, dtype=torch.float).to(device)
+
+def train_single_epoch(model, data_loader, loss_fn, optimizer, device):
+    model.train()
+
     for input, target in data_loader:
-        input, target = input.to(device), target.to(device)
+        input, target = input.to(device), target.to(device)  # Move tensors to the device
+
+        if len(target.shape) > 1:
+            target = torch.argmax(target, dim=1)
 
         # Forward pass
         prediction = model(input)
@@ -40,61 +50,85 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
         loss = loss_fn(prediction, target)
 
         # Backward pass and optimize
-        optimiser.zero_grad()
+        optimizer.zero_grad()
         loss.backward()
-        optimiser.step()
+        optimizer.step()
 
-    print(f"loss: {loss.item()}")
+    print(f"Training Loss: {loss.item()}")
 
+def validate(model, data_loader, loss_fn, device):
+    model.eval()
+    total_loss = 0.0
+    total_samples = 0
 
-def train(model, data_loader, loss_fn, optimiser, device, epochs):
-    for i in range(epochs):
-        print(f"Epoch {i+1}")
-        train_single_epoch(model, data_loader, loss_fn, optimiser, device)
+    with torch.no_grad():
+        for input, target in data_loader:
+            input, target = input.to(device), target.to(device)
+
+            # If targets are one-hot encoded, convert to class indices
+            if len(target.shape) > 1:
+                target = torch.argmax(target, dim=1)
+
+            prediction = model(input)
+            loss = loss_fn(prediction, target)
+
+            total_loss += loss.item() * input.size(0)
+            total_samples += input.size(0)
+
+    average_loss = total_loss / total_samples
+    print(f"Validation Loss: {average_loss}")
+    return average_loss
+
+def train(model, train_loader, val_loader, loss_fn, optimizer, device, epochs):
+    best_val_loss = float('inf')
+
+    # Move the model to the device
+    model.to(device)
+
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}")
+        train_single_epoch(model, train_loader, loss_fn, optimizer, device)
+        val_loss = validate(model, val_loader, loss_fn, device)
+
+        # Save the model with the best validation loss
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), "Nebula.pth")
+            print("Best model saved.")
+
         print("---------------------------")
+
     print("Finished training")
 
-
 if __name__ == "__main__":
-    #choosing device, if cuda is available then use cuda else use cpu
-    if torch.cuda.is_available():
-        device = "cuda"
-    else:
-        device = "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using {device}")
 
-    # instantiating our dataset object and create data loader
-    #mel spectrogram
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
         sample_rate=SAMPLE_RATE,
         n_fft=1024,
         hop_length=512,
         n_mels=64
     )
-    
-    #it passes the path to the annotations file and the audio files
-    usd = MusicDataSet(ANNOTATIONS_FILE, 
-                       AUDIO_DIR, 
+
+    usd = MusicDataSet(ANNOTATIONS_FILE,
+                       AUDIO_DIR,
                        mel_spectrogram,
-                       SAMPLE_RATE, 
+                       SAMPLE_RATE,
                        NUM_SAMPLES,
                        device)
 
-    
-    train_dataloader = create_data_loader(usd, BATCH_SIZE)
+    train_loader, val_loader = create_data_loaders(usd, BATCH_SIZE, VALIDATION_SPLIT)
 
-    # construct model and assign it to device
+    # Set the number of classes based on your actual problem
+    num_classes = 10
+
     cnn = CNNNetwork().to(device)
     print(cnn)
 
-    # initialise loss funtion + optimiser
+    optimizer = torch.optim.Adam(cnn.parameters(), lr=LEARNING_RATE)
 
-    optimiser = torch.optim.Adam(cnn.parameters(),
-                                 lr=LEARNING_RATE)
+    # Use standard cross-entropy loss
+    loss_fn = nn.CrossEntropyLoss(weight=calculate_class_weights(usd))
 
-    # train model
-    train(cnn, train_dataloader, loss_fn, optimiser, device, EPOCHS)
-
-    # save model
-    torch.save(cnn.state_dict(), "Nebula.pth")
-    print("Trained feed forward net saved at Nebula.pth")
+    train(cnn, train_loader, val_loader, loss_fn, optimizer, device, EPOCHS)
