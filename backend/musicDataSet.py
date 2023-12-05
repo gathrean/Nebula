@@ -49,6 +49,18 @@ class MusicDataSet(Dataset):
         
         return signal, label
     
+    def get_class_counts(self):
+        # Assuming the labels are in the second column and onward in your annotations file
+        label_columns = self.annotations.columns[1:]
+        class_counts = {label: 0 for label in label_columns}
+
+        for index in range(len(self.annotations)):
+            labels = self._get_audio_sample_label(index)
+            for label in label_columns:
+                class_counts[label] += labels[label_columns.get_loc(label)]
+
+        return class_counts
+    
     def _cut_if_necessary(self, signal):
         # signal -> Tensor -> (1, num_samples) -> (1, 50000) -> (1, 22050)
         length_signal = signal.shape[1]
@@ -101,8 +113,8 @@ class MusicDataSet(Dataset):
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTest.csv"
-    AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiSongs"
+    ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\SpotifyTrain.csv"
+    AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\Spotify"
     
     #sample rate of the audio files
     SAMPLE_RATE = 22050
