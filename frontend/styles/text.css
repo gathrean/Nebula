@@ -1,0 +1,39 @@
+h1 {
+    font-family: 'Modernist', Arial, sans-serif;
+    margin: 0;
+    font-weight: 500;
+}
+
+p {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    font-weight: 0;
+}
+
+h1.nebula-logo-text {
+    font-size: 100px;
+    color: #983d50;
+    margin: 0;
+    padding: 0;
+}
+
+.nebula-logo {
+    width: 100px;
+    height: auto;
+}
+
+.nebula-logo-container {
+    overflow: hidden; /* Hide overflow content for animation */
+    white-space: nowrap; /* Prevent line breaks */
+    position: relative; /* Position for animation */
+    animation: slideIn 1s ease forwards; /* Apply the animation */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%); /* Start position, off-screen right */
+    }
+    to {
+        transform: translateX(0); /* End position, original spot */
+    }
+}

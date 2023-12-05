@@ -3,6 +3,8 @@ from torchsummary import summary
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 import torch
+import torchvision.transforms as transforms
+import torch.nn.functional as F
 
 
 class CNNNetwork(nn.Module):
@@ -64,6 +66,76 @@ class CNNNetwork(nn.Module):
             
             nn.MaxPool2d(kernel_size=2)
         )
+
+        #in_features= 2304
+        self.conv5 = nn.Sequential(
+            nn.Conv2d(in_channels=128,
+                      out_channels=256,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+        
+        #in_features= 2048
+        self.conv6 = nn.Sequential(
+            nn.Conv2d(in_channels=256,
+                      out_channels=512,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+        
+        #in_features= 4096
+        self.conv7 = nn.Sequential(
+            nn.Conv2d(in_channels=512,
+                      out_channels=1024,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+        
+        #in_features= 8192
+        self.conv8 = nn.Sequential(
+            nn.Conv2d(in_channels=1024,
+                      out_channels=2048,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
+        
+        #in_features= 16384
+        self.conv9 = nn.Sequential(
+            nn.Conv2d(in_channels=2048,
+                      out_channels=4096,
+                      kernel_size=3,
+                      stride=1,
+                      padding=2
+            ),
+            #rectified linear unit
+            nn.ReLU(),
+            
+            nn.MaxPool2d(kernel_size=2)
+        )
         
         #flatten the data
         self.flatten = nn.Flatten()
@@ -93,7 +165,7 @@ class CNNNetwork(nn.Module):
         x = self.conv4(x)
         x = self.flatten(x)
         x = x.view(x.size(0), -1)
-        x = self.dropout_linear(x)
+        # x = self.dropout_linear(x)
         predictions = self.linear(x)
 
         return predictions

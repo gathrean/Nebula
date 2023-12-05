@@ -1,0 +1,86 @@
+.container {
+    display: flex;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+
+    max-width: 90vw;
+    height: 100vh;
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    max-width: 600px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.overlay-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    text-align: center;
+}
+
+/* 
+    site-container containts both
+    character-container and upload-form-container
+*/
+.site-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+
+    max-width: 100vw;
+    margin: 0 auto;
+}
+
+.character-container {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    text-align: center;
+}
+
+.upload-form-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0%;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+    .logo-container {
+        margin-bottom: 20px;
+    }
+
+    .site-container {
+        width: 90vw;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Change to a column layout */
+    }
+
+    .character-container,
+    .upload-form-container {
+        width: 100%;
+        /* Occupy full width */
+    }
+
+    .character-container {
+        width: 60vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

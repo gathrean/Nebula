@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Modernist';
+    src: url('fonts/Sk-Modernist-Regular.otf') format('opentype');
+}
+
+body {
+    font-family: 'Modernist', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f1eff2;
+    color: #983d50;
+    height: 100vh;
+}
