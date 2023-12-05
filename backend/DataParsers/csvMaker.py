@@ -2,10 +2,10 @@ import os
 import csv
 
 # Define the directory containing the text files
-directory_path = r'C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\Multi'
+directory_path = r'C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\delete'
 
 # Define the instrument abbreviations
-instrument_abbreviations = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
+instrument_abbreviations = ["cel", "cla", "flu", "gac", "gel", "pia", "sax", "tru", "vio", "dru"]
 
 # Initialize the data list with the header row
 data = [['FileName'] + instrument_abbreviations]

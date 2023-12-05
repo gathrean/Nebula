@@ -13,14 +13,18 @@ function displayPredictedLabels(labelsData) {
     }
 
     const labelParts = labelsString.split(',').filter(part => part.includes(':'));
-
-    // Skip the first and the last elements of the array
-    for (let i = 1; i < labelParts.length - 1; i++) {
+    
+    // Loop through all elements in labelParts
+    for (let i = 0; i < labelParts.length; i++) {
         const part = labelParts[i];
         const [instrument, probability] = part.split(':').map(s => s.trim());
-        const probabilityPercentage = (parseFloat(probability) * 100).toFixed(2) + '%';
-        const labelElement = document.createElement('div');
-        labelElement.textContent = `${instrument}: ${probabilityPercentage}`;
-        labelsContainer.appendChild(labelElement);
+        
+        // Check if instrument and probability are valid
+        if (instrument && probability) {
+            const probabilityPercentage = (parseFloat(probability) * 100).toFixed(2) + '%';
+            const labelElement = document.createElement('div');
+            labelElement.textContent = `${instrument}`;
+            labelsContainer.appendChild(labelElement);
+        }
     }
 }

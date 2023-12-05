@@ -76,15 +76,26 @@ def predict_full_song(model, audio_file_path, class_mapping, segment_length):
     # Example: averaging the predictions
     average_predictions = torch.mean(torch.stack(aggregated_predictions), dim=0)
 
+    # Calculate mean and standard deviation
+    mean = torch.mean(average_predictions).item()
+    std_dev = torch.std(average_predictions).item()
+
+    # Determine the cutoff (mean + standard deviation)
+    criteria = 0.8
+    cutoff = mean + std_dev * criteria
+
     # Pair each label with its average prediction and sort by probability
     sorted_predictions = sorted(zip(class_mapping, average_predictions), key=lambda x: x[1], reverse=True)
 
+    # Filter based on the cutoff
+    filtered_predictions = [(label, prob.item()) for label, prob in sorted_predictions if prob.item() >= cutoff]
+
     # Generate final output
-    print("Average predictions for the full song (sorted by accuracy):")
-    for label, prob in sorted_predictions:
+    print("Filtered predictions for the full song (sorted by accuracy):")
+    for label, prob in filtered_predictions:
         print(f"{label}: {prob:.4f}")
 
-    return sorted_predictions
+    return filtered_predictions
 
 
 if __name__ == "__main__":
@@ -92,21 +103,24 @@ if __name__ == "__main__":
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
     class_mapping = [
+        "bass",
         "cello",
         "clarinet",
+        "cymbals",
+        "drums",
         "flute",
-        "acoustic guitar",
-        "electric guitar",
+        "guitar",
         "piano",
         "saxophone",
+        "trombone",
         "trumpet",
         "violin",
-        "human singing voice"
+        "voice"
     ]
 
     # Load the model
     cnn = CNNNetwork()
-    state_dict = torch.load("NebulaWeight.pth", map_location=torch.device('cpu'))
+    state_dict = torch.load("Nebula.pth", map_location=torch.device('cpu'))
     cnn.load_state_dict(state_dict)
     cnn.eval()
 

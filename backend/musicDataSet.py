@@ -113,8 +113,8 @@ class MusicDataSet(Dataset):
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiTest.csv"
-    AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\MultiSongs"
+    ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\SpotifyTrain.csv"
+    AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\Spotify"
     
     #sample rate of the audio files
     SAMPLE_RATE = 22050

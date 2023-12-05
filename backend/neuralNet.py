@@ -1,8 +1,8 @@
 from torch import nn
 from torchsummary import summary
-import torch
-import torchvision.transforms as transforms
 import torch.nn.functional as F
+import torchvision.transforms as transforms
+import torch
 
 class CNNNetwork(nn.Module):
     
@@ -11,7 +11,7 @@ class CNNNetwork(nn.Module):
         super().__init__()
         #4 conv blocks / flatten / linear / softmax
         
-        # container that has layers, an pytorch will process the layers in order
+         # container that has layers, an pytorch will process the layers in order
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=1,
                       out_channels=16,
@@ -137,7 +137,7 @@ class CNNNetwork(nn.Module):
         #flatten the data
         self.flatten = nn.Flatten()
         # out_features is the number of classes (drum, piano, guitar, violin)
-        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 10)
+        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 13)
         #softmax to normalize the output between the categories
         self.sigmoid = nn.Sigmoid()
         self.dropout_linear = nn.Dropout(0.5)
@@ -147,7 +147,6 @@ class CNNNetwork(nn.Module):
             transforms.RandomHorizontalFlip(),
             transforms.RandomRotation(10),
         ])
-    
     
     def forward(self, input_data):
         # Apply data augmentation
