@@ -14,11 +14,10 @@ function handleFileUpload(file) {
     predictedLabels.style.display = 'none'; // Hide predicted labels initially
     
     // Resetting the video
-    if (!videoElement.paused) {
+    if (!videoElement.paused || videoElement.currentTime > 0) {
         videoElement.pause();
-        videoElement.currentTime = 0;
-        videoElement.load();
-        videoElement.play();
+        videoElement.currentTime = 0; // Reset video to start
+        videoElement.play(); // Start playing the video
     }
 
     const formData = new FormData();
@@ -28,28 +27,28 @@ function handleFileUpload(file) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            clearInterval(animationTimer); // Clear the timer
-            // Show 'Done' image after a delay (6 seconds minimum)
-            animationTimer = setTimeout(() => {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                clearInterval(animationTimer); // Clear the timer
+                // Show 'Done' image after a delay (6 seconds minimum)
+                animationTimer = setTimeout(() => {
+                    nebulaLoading.style.display = 'none';
+                    nebulaDone.style.display = 'block';
+                    predictedLabels.style.display = 'block'; // Show predicted labels when Done is displayed
+                    displayPredictedLabels(data.predicted);
+                }, 6000);
+            } else {
+                document.getElementById('status').textContent = 'Error: ' + data.error;
+                // Show 'None' image in case of error
                 nebulaLoading.style.display = 'none';
-                nebulaDone.style.display = 'block';
-                predictedLabels.style.display = 'block'; // Show predicted labels when Done is displayed
-                displayPredictedLabels(data.predicted);
-            }, 6000);
-        } else {
-            document.getElementById('status').textContent = 'Error: ' + data.error;
+                nebulaNone.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            document.getElementById('status').textContent = 'Error: ' + error;
             // Show 'None' image in case of error
             nebulaLoading.style.display = 'none';
             nebulaNone.style.display = 'block';
-        }
-    })
-    .catch(error => {
-        document.getElementById('status').textContent = 'Error: ' + error;
-        // Show 'None' image in case of error
-        nebulaLoading.style.display = 'none';
-        nebulaNone.style.display = 'block';
-    });
+        });
 }
