@@ -24,6 +24,7 @@ function displayPredictedLabels(labelsData) {
             const probabilityPercentage = (parseFloat(probability) * 100).toFixed(2) + '%';
             const labelElement = document.createElement('div');
             labelElement.textContent = `${instrument}`;
+            labelElement.classList.add('predicted-label'); // Add a class for styling
             labelsContainer.appendChild(labelElement);
         }
     }

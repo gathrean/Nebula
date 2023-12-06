@@ -11,3 +11,8 @@ body {
     color: #983d50;
     height: 100vh;
 }
+
+.predicted-label {
+    font-size: 1.5em; /* Adjust the font size as needed */
+    /* You can add other styles such as font-weight, color, etc. */
+}
