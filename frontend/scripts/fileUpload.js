@@ -4,12 +4,23 @@ function handleFileUpload(file) {
     const nebulaNone = document.querySelector('.character-container:nth-child(1)');
     const nebulaLoading = document.querySelector('.character-container:nth-child(2)');
     const nebulaDone = document.querySelector('.character-container:nth-child(3)');
-    
+    const predictedLabels = document.getElementById('predictedLabels');
+    const videoElement = document.querySelector('.character-container:nth-child(2) video');
+
     // Hide 'None' and 'Done' images, show 'Loading' video
     nebulaNone.style.display = 'none';
     nebulaDone.style.display = 'none';
     nebulaLoading.style.display = 'block';
+    predictedLabels.style.display = 'none'; // Hide predicted labels initially
     
+    // Resetting the video
+    if (!videoElement.paused) {
+        videoElement.pause();
+        videoElement.currentTime = 0;
+        videoElement.load();
+        videoElement.play();
+    }
+
     const formData = new FormData();
     formData.append('audio', file);
 
@@ -21,11 +32,12 @@ function handleFileUpload(file) {
     .then(data => {
         if (data.success) {
             clearInterval(animationTimer); // Clear the timer
-            displayPredictedLabels(data.predicted);
             // Show 'Done' image after a delay (6 seconds minimum)
             animationTimer = setTimeout(() => {
                 nebulaLoading.style.display = 'none';
                 nebulaDone.style.display = 'block';
+                predictedLabels.style.display = 'block'; // Show predicted labels when Done is displayed
+                displayPredictedLabels(data.predicted);
             }, 6000);
         } else {
             document.getElementById('status').textContent = 'Error: ' + data.error;
