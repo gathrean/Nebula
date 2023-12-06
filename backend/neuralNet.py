@@ -162,7 +162,7 @@ class CNNNetwork(nn.Module):
         x = self.conv4(x)
         x = self.flatten(x)
         x = x.view(x.size(0), -1)
-        # x = self.dropout_linear(x)
+        x = self.dropout_linear(x)
         predictions = self.linear(x)
 
         return predictions
