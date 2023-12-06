@@ -8,3 +8,5 @@ filePaths.py
 node_modules/
 uploads/
 Nebula.pth
+package-lock.json
+package.json
