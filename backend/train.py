@@ -6,16 +6,16 @@ from musicDataSet import MusicDataSet
 from neuralNet import CNNNetwork
 
 # Constants
-BATCH_SIZE = 512
-EPOCHS = 40
+BATCH_SIZE = 256
+EPOCHS = 50
 LEARNING_RATE = 0.001
 VALIDATION_SPLIT = 0.1  # 10% of the data will be used for validation
 
-ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\SpotifyTest.csv"
+ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\FinalData.csv"
 AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\Spotify"
 # sample rate of the audio files
 SAMPLE_RATE = 22050 
-NUM_SAMPLES = 22050
+NUM_SAMPLES = 22050 * 5
 
 
 def create_data_loaders(dataset, batch_size, validation_split):
@@ -133,6 +133,6 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(cnn.parameters(), lr=LEARNING_RATE)
 
     # Use standard cross-entropy loss
-    loss_fn = nn.CrossEntropyLoss(weight=calculate_class_weights(usd))
+    loss_fn = nn.CrossEntropyLoss()
 
     train(cnn, train_loader, val_loader, loss_fn, optimizer, device, EPOCHS)
