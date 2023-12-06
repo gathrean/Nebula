@@ -8,3 +8,4 @@ filePaths.py
 node_modules/
 uploads/
 Nebula.pth
+server.js
