@@ -41,10 +41,11 @@ with open(output_file_path, mode='w', newline='') as output_file:
     header_row = ["FileName"] + list(instruments.keys())
     csv_writer.writerow(header_row)
     
-    # Write data rows
+    # Write data rows only if there is at least one instrument with relevance 1
     for sample_key, instrument_usage in sample_key_instruments.items():
-        file_name = f"{sample_key}.ogg"
-        csv_row = [file_name] + instrument_usage
-        csv_writer.writerow(csv_row)
+        if 1 in instrument_usage:
+            file_name = f"{sample_key}.ogg"
+            csv_row = [file_name] + instrument_usage
+            csv_writer.writerow(csv_row)
 
 print("Output CSV file has been created.")

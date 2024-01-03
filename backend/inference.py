@@ -81,7 +81,7 @@ def predict_full_song(model, audio_file_path, class_mapping, segment_length):
     std_dev = torch.std(average_predictions).item()
 
     # Determine the cutoff (mean + standard deviation)
-    criteria = 0.8
+    criteria = 0.5
     cutoff = mean + std_dev * criteria
 
     # Pair each label with its average prediction and sort by probability
@@ -101,18 +101,15 @@ def predict_full_song(model, audio_file_path, class_mapping, segment_length):
 if __name__ == "__main__":
     # Define constants
     SAMPLE_RATE = 22050
-    NUM_SAMPLES = 22050
+    NUM_SAMPLES = 22050 * 5
     class_mapping = [
         "bass",
         "cello",
         "clarinet",
-        "cymbals",
         "drums",
         "flute",
         "guitar",
         "piano",
-        "saxophone",
-        "trombone",
         "trumpet",
         "violin",
         "voice"

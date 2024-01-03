@@ -1,8 +1,8 @@
 import csv
 
 # Input and output file names
-input_file = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\output.csv"
-output_file = "SpotifyTrain.csv"
+input_file = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\FinalData3.csv"
+output_file = "FinalData3.csv"
 
 # Open the input and output files
 with open(input_file, mode='r') as input_csv, open(output_file, mode='w', newline='') as output_csv:

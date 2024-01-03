@@ -9,29 +9,42 @@ import numpy as np
 
 # Constants
 BATCH_SIZE = 256
-EPOCHS = 50
+EPOCHS = 70
 LEARNING_RATE = 0.001
 VALIDATION_SPLIT = 0.1  # 10% of the data will be used for validation
 
-ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\FinalData.csv"
+ANNOTATIONS_FILE = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\FinalData3.csv"
 AUDIO_DIR = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\Spotify"
-SAMPLE_RATE = 22050
-NUM_SAMPLES = 22050 * 10
-PRETRAINED_MODEL_PATH = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\Best.pth"  # Path to the pre-trained model
+# sample rate of the audio files
+SAMPLE_RATE = 22050 
+NUM_SAMPLES = 22050 * 5
 
-def create_data_loaders(dataset, batch_size, validation_split):
+
+def create_data_loaders(dataset, batch_size, validation_split, num_classes):
     total_samples = len(dataset)
     validation_size = int(validation_split * total_samples)
     training_size = total_samples - validation_size
 
     train_set, val_set = random_split(dataset, [training_size, validation_size])
 
+    # Initialize a dictionary to count samples per class in the validation set
+    val_class_counts = {class_label: 0 for class_label in range(num_classes)}
+
+    # Iterate over the validation set to count the samples per class
+    for idx in val_set.indices:
+        labels = dataset._get_audio_sample_label(idx)  # Using the private method (consider making it public)
+        for class_index, label in enumerate(labels):
+            if label == 1:  # Assuming a label of 1 indicates presence of the class
+                val_class_counts[class_index] += 1
+
     train_dataloader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
     val_dataloader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
 
-    return train_dataloader, val_dataloader
+    return train_dataloader, val_dataloader, val_class_counts
+
 
 def calculate_class_weights(dataset):
+    # Assuming your dataset has a method to get the total count of each class
     class_counts = dataset.get_class_counts()
     total_samples = sum(class_counts.values())
     class_weights = [total_samples / (len(class_counts) * count) for count in class_counts.values()]
@@ -41,19 +54,24 @@ def train_single_epoch(model, data_loader, loss_fn, optimizer, device):
     model.train()
 
     for input, target in data_loader:
-        input, target = input.to(device), target.to(device)
+        input, target = input.to(device), target.to(device)  # Move tensors to the device
 
         if len(target.shape) > 1:
             target = torch.argmax(target, dim=1)
+            # Forward pass
         prediction = model(input)
+
+        # Calculate loss
         loss = loss_fn(prediction, target)
 
+        # Backward pass and optimize
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
     print(f"Training Loss: {loss.item()}")
     
+
 def validate(model, data_loader, loss_fn, device):
     model.eval()
     total_loss = 0.0
@@ -65,6 +83,7 @@ def validate(model, data_loader, loss_fn, device):
         for input, target in data_loader:
             input, target = input.to(device), target.to(device)
 
+            # If targets are one-hot encoded, convert to class indices
             if len(target.shape) > 1:
                 target = torch.argmax(target, dim=1)
 
@@ -74,6 +93,7 @@ def validate(model, data_loader, loss_fn, device):
             total_loss += loss.item() * input.size(0)
             total_samples += input.size(0)
 
+            # Save predictions and true labels
             all_predictions.extend(torch.argmax(prediction, dim=1).cpu().numpy())
             all_targets.extend(target.cpu().numpy())
 
@@ -81,13 +101,11 @@ def validate(model, data_loader, loss_fn, device):
     print(f"Validation Loss: {average_loss}")
     return average_loss, np.array(all_predictions), np.array(all_targets)
 
-def train(model, train_loader, val_loader, loss_fn, optimizer, device, epochs, pretrained_model_path=None):
+
+def train(model, train_loader, val_loader, val_class_counts, loss_fn, optimizer, device, epochs):
     best_val_loss = float('inf')
 
-    if pretrained_model_path:
-        model.load_state_dict(torch.load(pretrained_model_path))
-        print("Loaded pre-trained model")
-
+    # Move the model to the device
     model.to(device)
 
     for epoch in range(epochs):
@@ -95,20 +113,24 @@ def train(model, train_loader, val_loader, loss_fn, optimizer, device, epochs, p
         train_single_epoch(model, train_loader, loss_fn, optimizer, device)
         val_loss, val_predictions, val_targets = validate(model, val_loader, loss_fn, device)
 
+        # Save the model with the best validation loss
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), "Hope.pth")
+            torch.save(model.state_dict(), "Nebula.pth")
             print("Best model saved.")
 
+        # Compute confusion matrix and F1 score
         confusion_mat = confusion_matrix(val_targets, val_predictions)
         f1 = f1_score(val_targets, val_predictions, average='weighted')
 
-        print(f"Confusion Matrix:\\n{confusion_mat}")
+        print(f"Confusion Matrix:\n{confusion_mat}")
         print(f"F1 Score: {f1}")
-
+        print(f"Validation Samples Per Class: {val_class_counts}")
         print("---------------------------")
 
     print("Finished training")
+
+
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -127,24 +149,23 @@ if __name__ == "__main__":
                        SAMPLE_RATE,
                        NUM_SAMPLES,
                        device)
-
-    train_loader, val_loader = create_data_loaders(usd, BATCH_SIZE, VALIDATION_SPLIT)
-
-    num_classes = 13
     
-        # Initialize the CNN network
-    cnn = CNNNetwork().to(device)
+    # Set the number of classes based on your actual problem
+    num_classes = 10  
 
-    # Initialize the optimizer
+    train_loader, val_loader, val_class_counts = create_data_loaders(usd, BATCH_SIZE, VALIDATION_SPLIT, num_classes)
+
+    cnn = CNNNetwork().to(device)
+    print(cnn)
+
     optimizer = torch.optim.Adam(cnn.parameters(), lr=LEARNING_RATE)
 
-    # Calculate class weights for handling imbalanced classes
+    # Use standard cross-entropy loss
+    # loss_fn = nn.CrossEntropyLoss()
+    
     class_weights = calculate_class_weights(usd)
     
-    # Use weighted CrossEntropyLoss
+    # Use CrossEntropyLoss with class weights
     loss_fn = nn.CrossEntropyLoss(weight=class_weights)
 
-    # Train the model
-    train(cnn, train_loader, val_loader, loss_fn, optimizer, device, EPOCHS, PRETRAINED_MODEL_PATH)
-
-    print("Training complete.")
+    train(cnn, train_loader, val_loader, val_class_counts, loss_fn, optimizer, device, EPOCHS)

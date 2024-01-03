@@ -19,6 +19,8 @@ class CNNNetwork(nn.Module):
                       stride=1,
                       padding=2
             ),
+            nn.BatchNorm2d(16),
+            
             #rectified linear unit
             nn.ReLU(),
             
@@ -32,6 +34,8 @@ class CNNNetwork(nn.Module):
                       stride=1,
                       padding=2
             ),
+            # nn.BatchNorm2d(32),
+            
             #rectified linear unit
             nn.ReLU(),
             
@@ -45,6 +49,8 @@ class CNNNetwork(nn.Module):
                       stride=1,
                       padding=2
             ),
+            # nn.BatchNorm2d(64),
+            
             #rectified linear unit
             nn.ReLU(),
             
@@ -58,86 +64,18 @@ class CNNNetwork(nn.Module):
                       stride=1,
                       padding=2
             ),
+            
             #rectified linear unit
             nn.ReLU(),
             
             nn.MaxPool2d(kernel_size=2)
         )
 
-        #in_features= 2304
-        self.conv5 = nn.Sequential(
-            nn.Conv2d(in_channels=128,
-                      out_channels=256,
-                      kernel_size=3,
-                      stride=1,
-                      padding=2
-            ),
-            #rectified linear unit
-            nn.ReLU(),
-            
-            nn.MaxPool2d(kernel_size=2)
-        )
-        
-        #in_features= 2048
-        self.conv6 = nn.Sequential(
-            nn.Conv2d(in_channels=256,
-                      out_channels=512,
-                      kernel_size=3,
-                      stride=1,
-                      padding=2
-            ),
-            #rectified linear unit
-            nn.ReLU(),
-            
-            nn.MaxPool2d(kernel_size=2)
-        )
-        
-        #in_features= 4096
-        self.conv7 = nn.Sequential(
-            nn.Conv2d(in_channels=512,
-                      out_channels=1024,
-                      kernel_size=3,
-                      stride=1,
-                      padding=2
-            ),
-            #rectified linear unit
-            nn.ReLU(),
-            
-            nn.MaxPool2d(kernel_size=2)
-        )
-        
-        #in_features= 8192
-        self.conv8 = nn.Sequential(
-            nn.Conv2d(in_channels=1024,
-                      out_channels=2048,
-                      kernel_size=3,
-                      stride=1,
-                      padding=2
-            ),
-            #rectified linear unit
-            nn.ReLU(),
-            
-            nn.MaxPool2d(kernel_size=2)
-        )
-        
-        #in_features= 16384
-        self.conv9 = nn.Sequential(
-            nn.Conv2d(in_channels=2048,
-                      out_channels=4096,
-                      kernel_size=3,
-                      stride=1,
-                      padding=2
-            ),
-            #rectified linear unit
-            nn.ReLU(),
-            
-            nn.MaxPool2d(kernel_size=2)
-        )
         
         #flatten the data
         self.flatten = nn.Flatten()
         # out_features is the number of classes (drum, piano, guitar, violin)
-        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 13)
+        self.linear = nn.Linear(in_features= (128 * 5 * 4), out_features= 10)
         #softmax to normalize the output between the categories
         self.sigmoid = nn.Sigmoid()
         self.dropout_linear = nn.Dropout(0.5)

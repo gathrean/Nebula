@@ -17,12 +17,13 @@ def create_filtered_csv(input_csv, output_csv, songs_to_remove):
 
         # Write rows that do not correspond to songs in the note file
         for row in csv_reader:
-            if row[0] not in songs_to_remove:
+            song_name = row[0]
+            if song_name not in songs_to_remove or any(map(int, row[1:])) != 0:
                 csv_writer.writerow(row)
 
 if __name__ == "__main__":
     note_file = r"C:\Users\bardi\Downloads\songs_to_remove.txt"
-    input_csv = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\SpotifyTest.csv"
+    input_csv = r"C:\Users\bardi\OneDrive\Documents\CST_Sem3\Nebula\Nebula\dataset\FinalData.csv"
     output_csv = "FinalDataTest.csv"
 
     songs_to_remove = read_note_file(note_file)
