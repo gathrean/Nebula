@@ -25,9 +25,9 @@ app.get('/', (req, res) => {
 
 app.post('/upload', upload.single('audio'), (req, res) => {
     const audioFilePath = path.join('uploads', req.file.filename);
-    const pythonExecutablePath = 'C:/Users/bardi/AppData/Local/Programs/Python/Python310/python.exe';
+    const pythonExecutablePath = '/Library/Frameworks/Python.framework/Versions/3.11/bin/python3';
 
-    const pythonProcess = spawn(pythonExecutablePath, ['C:/Users/bardi/OneDrive/Documents/CST_Sem3/Nebula/Nebula/backend/inference.py', audioFilePath]);
+    const pythonProcess = spawn(pythonExecutablePath, ['/Users/ravdeepaulakh/Downloads/Nebula/backend/inference.py', audioFilePath]);
 
     let predictedLabels = [];
     let errorOccurred = false;
