@@ -1,10 +1,17 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { spawn } = require('child_process');
+import express from 'express';
+import multer from 'multer';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fetch from 'node-fetch';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+// Update the ngrok URL here
+const flaskServerURL = 'https://d187-2604-3d08-7077-d200-38e9-945c-5f3e-489d.ngrok-free.app/execute-python';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -17,46 +24,41 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(join(__dirname, 'frontend')));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(join(__dirname, 'index.html'));
 });
 
-app.post('/upload', upload.single('audio'), (req, res) => {
-    const audioFilePath = path.join('uploads', req.file.filename);
-    const pythonExecutablePath = '/Library/Frameworks/Python.framework/Versions/3.11/bin/python3';
+app.post('/upload', upload.single('audio'), async (req, res) => {
+    const audioFilePath = join('uploads', req.file.filename);
 
-    const pythonProcess = spawn(pythonExecutablePath, ['/Users/ravdeepaulakh/Downloads/Nebula/backend/inference.py', audioFilePath]);
+    try {
+        const response = await fetch(flaskServerURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ audioFilePath }),
+        });
 
-    let predictedLabels = [];
-    let errorOccurred = false;
-
-    pythonProcess.stdout.on('data', (data) => {
-        const output = data.toString().trim();
-        console.log(`Received from Python script (stdout): ${output}`);
-
-        // Assuming the output contains labels, parse and store them
-        const lines = output.split('\n');
-        predictedLabels = lines.map(line => line.trim());
-    });
-
-    pythonProcess.stderr.on('data', (data) => {
-        console.error(`Error from Python script (stderr): ${data}`);
-        errorOccurred = true;
-    });
-
-    pythonProcess.on('close', (code) => {
-        console.log(`Python script exited with code ${code}`);
-        console.log(`Final predicted labels: ${predictedLabels}`);
-
-        if (errorOccurred) {
-            res.status(500).json({ success: false, error: 'Internal Server Error' });
-        } else {
-            console.log("sending json")
-            res.status(200).json({ success: true, predicted: predictedLabels });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    });
+
+        const data = await response.json();
+
+        // Log the response from Flask for debugging
+        console.log('Flask Response:', data);
+
+        // Check if 'predicted' field exists in the response
+        if ('predicted' in data) {
+            res.status(200).json({ success: true, predicted: data.predicted });
+        } else {
+            res.status(500).json({ success: false, error: 'Malformed response from Flask' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
 });
 
 app.listen(port, () => {
