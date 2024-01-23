@@ -6,7 +6,6 @@ requirements.txt
 __pycache__/
 filePaths.py
 node_modules/
-uploads/
 Nebula.pth
 server.js
 package-lock.json
