@@ -5,6 +5,7 @@ node_modules/
 requirements.txt
 __pycache__/
 filePaths.py
+uploads/
 node_modules/
 Nebula.pth
 server.js

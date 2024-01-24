@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Update the ngrok URL here
-const flaskServerURL = 'https://d187-2604-3d08-7077-d200-38e9-945c-5f3e-489d.ngrok-free.app/execute-python';
+const flaskServerURL = 'https://38b7-142-232-219-152.ngrok-free.app/execute-python';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/upload', upload.single('audio'), async (req, res) => {
-    const audioFilePath = join(__dirname, 'uploads', req.file.filename);
+    const audioFilePath = join('uploads', req.file.filename);
 
     try {
         const response = await fetch(flaskServerURL, {
