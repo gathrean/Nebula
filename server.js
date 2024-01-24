@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/upload', upload.single('audio'), async (req, res) => {
-    const audioFilePath = join('uploads', req.file.filename);
+    const audioFilePath = join(__dirname, 'uploads', req.file.filename);
 
     try {
         const response = await fetch(flaskServerURL, {
